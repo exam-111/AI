@@ -1,0 +1,76 @@
+import random
+
+board = [" " for _ in range(9)]
+
+def print_board():
+    print(f"{board[0]} | {board[1]} | {board[2]}")
+    print("--+---+--")
+    print(f"{board[3]} | {board[4]} | {board[5]}")
+    print("--+---+--")
+    print(f"{board[6]} | {board[7]} | {board[8]}")
+    print()
+
+def check_winner(b, player):
+    win_combinations = [
+        (0, 1, 2), (3, 4, 5), (6, 7, 8),
+        (0, 3, 6), (1, 4, 7), (2, 5, 8),
+        (0, 4, 8), (2, 4, 6)
+    ]
+    for x, y, z in win_combinations:
+        if b[x] == b[y] == b[z] == player:
+            return True
+    return False
+
+def is_draw(b):
+    return " " not in b
+
+def heuristic(b):
+    if check_winner(b, "O"):
+        return 10
+    elif check_winner(b, "X"):
+        return -10
+    return 0
+
+def ai_move():
+    best_score = -float('inf')
+    best_move = None
+    for i in range(9):
+        if board[i] == " ":
+            board[i] = "O"
+            score = heuristic(board)
+            board[i] = " "
+            if score > best_score:
+                best_score = score
+                best_move = i
+    if best_move is None:
+        best_move = random.choice([i for i in range(9) if board[i] == " "])
+    board[best_move] = "O"
+
+def play_game():
+    print("Welcome to Tic-Tac-Toe! You are X, AI is O.")
+    print_board()
+    while True:
+        move = int(input("Enter your move (1-9): ")) - 1
+        if board[move] != " ":
+            print("Invalid move. Try again.")
+            continue
+        board[move] = "X"
+        if check_winner(board, "X"):
+            print_board()
+            print("You win!")
+            break
+        if is_draw(board):
+            print_board()
+            print("It's a draw!")
+            break
+        ai_move()
+        print_board()
+        if check_winner(board, "O"):
+            print("AI wins!")
+            break
+        if is_draw(board):
+            print("It's a draw!")
+            break
+
+if __name__ == "__main__":
+    play_game()
